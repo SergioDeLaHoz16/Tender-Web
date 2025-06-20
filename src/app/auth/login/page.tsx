@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createClient } from "@/lib/supabase/client"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
+import { createClient } from "@/lib/supabase/clients"
+
 
 export default function LoginPage() {
   const router = useRouter()
@@ -48,8 +49,21 @@ export default function LoginPage() {
           .eq("id", user.id)
           .single()
 
+        // Log detallado para depuración
+        console.log("User object:", user)
+        console.log("Profile data:", profile)
+        console.log("Profile error:", profileError)
+
         if (profileError || !profile) {
-          setError("No se pudo verificar el rol del usuario.")
+          // Añade el user.id al log para verificar que se está usando el ID correcto
+          console.error("Error al obtener perfil o perfil no encontrado:", {
+            userId: user.id,
+            profileData: profile,
+            errorDetails: profileError,
+          })
+          setError(
+            `No se pudo verificar el rol del usuario. Detalles: ${profileError?.message || "Perfil no encontrado."}`,
+          )
         } else if (profile.role === "admin") {
           router.push("/admin/dashboard")
         } else {

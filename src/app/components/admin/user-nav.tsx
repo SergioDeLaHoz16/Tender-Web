@@ -15,8 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, Settings, UserIcon } from "lucide-react"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
+// Update the import path below to the actual location of your Supabase client instance.
+// For example, if your client is at src/lib/supabaseClient.ts, use:
+// import { createClient } from "src/lib/supabaseClient"
+// If the file does not exist, create it or correct the path accordingly.
+
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/clients"
 
 interface UserNavProps {
   user: User | null

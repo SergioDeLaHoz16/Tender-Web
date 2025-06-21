@@ -5,13 +5,14 @@ import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/clients"
-import { Terminal } from "lucide-react"
+import { Eye, EyeOff, Terminal } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
+  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -61,110 +62,98 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-transparent sm:flex sm:flex-row justify-center">
-      <div className="absolute top-0 left-0 bottom-0 right-0 bg-gradient-to-b from-gray-900 via-gray-900 to-purple-800 z-0"></div>
-
-      <div className="flex-col flex self-center lg:px-14 sm:max-w-4xl xl:max-w-md z-10 text-white">
-        <div className="self-start hidden lg:flex flex-col">
-          <h1 className="my-3 font-semibold text-4xl">Welcome back</h1>
-          <p className="pr-3 text-sm opacity-75">Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups</p>
+    <div
+      className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-center bg-cover bg-no-repeat
+"
+      style={{ backgroundImage: "url('/background.jpg')" }}>
+      <div className="absolute bg-black opacity-60 inset-0 z-0"></div>
+      <div className="max-w-md w-full space-y-8 p-10 bg-white dark:bg-card text-foreground dark:text-card-foreground rounded-xl z-10">
+        <div className="text-center">
+          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">Bienvenido a TenderApp!</h2>
+          <p className="mt-2 text-base text-black dark:text-muted-foreground">Por favor inicia sesion con tu cuenta</p>
         </div>
-      </div>
 
-      <div className="flex justify-center self-center z-10">
-        <div className="p-12 bg-white mx-auto rounded-3xl w-96">
-          <div className="mb-7">
-            <h3 className="font-semibold text-2xl text-gray-800">Sign In</h3>
-            <p className="text-gray-400">
-              Don't have an account?
-              <Link href="/auth/signup" className="text-sm text-purple-700 hover:text-purple-700 ml-1">Sign Up</Link>
-            </p>
+        {message && (
+          <Alert variant="default" className="mb-4 bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-200">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Información</AlertTitle>
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
+        )}
+
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <div className="relative">
+            <label className="text-base font-bold text-gray-700 dark:text-muted-foreground tracking-wide">Correo Electronico</label>
+            <input
+              className="w-full text-base py-2 border-b pl-2 border-gray-300 focus:outline-none focus:border-indigo-500 dark:bg-background dark:text-foreground"
+              type="email"
+              placeholder="user@examples.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+            />
           </div>
 
-          {message && (
-            <Alert variant="default" className="mb-4 bg-blue-50 border-blue-200 text-blue-700">
-              <Terminal className="h-4 w-4 !text-blue-700" />
-              <AlertTitle>Información</AlertTitle>
-              <AlertDescription>{message}</AlertDescription>
-            </Alert>
-          )}
+          <div className="mt-8 relative">
+            <label className="text-base font-bold text-gray-700 dark:text-muted-foreground tracking-wide">Contraseña</label>
+            <input
+              className="w-full text-base pl-2 py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500 dark:bg-background dark:text-foreground pr-10"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 bottom-2 text-[#1f2937] hover:text-[#c8a15f] dark:text-muted-foreground"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
 
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <Terminal className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <input
-                className="w-full text-sm px-4 py-3 bg-gray-200 focus:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-purple-400"
-                type="email"
-                placeholder="Email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-              />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input id="remember_me" name="remember_me" type="checkbox" className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+              <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900 dark:text-white">
+                Recordar mi sesion
+              </label>
             </div>
-
-            <div className="relative">
-              <input
-                placeholder="Password"
-                type="password"
-                className="text-sm text-gray-700 px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="text-sm ml-auto">
-              <Link href="#" className="text-purple-700 hover:text-purple-600">
-                Forgot your password?
+            <div className="text-sm">
+              <Link href="#" className="font-medium text-[#1f2937] hover:text-[#c8a15f]">
+                Olvidaste tu contraseña?
               </Link>
             </div>
+          </div>
 
+          <div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center bg-purple-800 hover:bg-purple-700 text-gray-100 p-3 rounded-lg tracking-wide font-semibold cursor-pointer transition ease-in duration-500"
-            >
-              {loading ? "Ingresando..." : "Sign in"}
+              className="w-full flex justify-center bg-[#1f2937] text-white p-4  rounded-sm tracking-wide font-semibold focus:outline-none focus:shadow-outline hover:bg-[#c8a15f] shadow-lg transition ease-in duration-300">
+              {loading ? "Ingresando..." : "Iniciar Sesión"}
             </button>
-
-            <div className="flex items-center justify-center space-x-2 my-5">
-              <span className="h-px w-16 bg-gray-100"></span>
-              <span className="text-gray-300 font-normal">or</span>
-              <span className="h-px w-16 bg-gray-100"></span>
-            </div>
-
-            <div className="flex justify-center gap-5 w-full">
-              <button
-                type="button"
-                className="w-full flex items-center justify-center border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3 rounded-lg tracking-wide font-medium cursor-pointer transition ease-in duration-500"
-              >
-                <span>Google</span>
-              </button>
-              <button
-                type="button"
-                className="w-full flex items-center justify-center border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3 rounded-lg tracking-wide font-medium cursor-pointer transition ease-in duration-500"
-              >
-                <span>Facebook</span>
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-7 text-center text-gray-300 text-xs">
-            <span>
-              Copyright © 2021-2023
-              <Link href="https://codepen.io/uidesignhub" target="_blank" className="text-purple-500 hover:text-purple-600 ml-1">AJI</Link>
-            </span>
           </div>
-        </div>
+
+          <p className="flex flex-col items-center justify-center mt-10 text-center text-md text-gray-500 dark:text-muted-foreground">
+            <span>No tienes una cuenta?</span>
+            <Link href="/auth/signup" className="text-[#1f2937] hover:text-[#c8a15f] hover:underline transition ease-in duration-300">
+              Registrate
+            </Link>
+          </p>
+        </form>
       </div>
     </div>
   )
